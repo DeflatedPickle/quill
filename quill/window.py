@@ -12,7 +12,7 @@ __version__ = "1.0.0"
 
 class Window(tk.Tk):
     """Creates the window used for the game."""
-    def __init__(self, title="Adventure", icon=None, *args, **kwargs):
+    def __init__(self, title="Quill", icon=None, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title(title)
         if icon is not None:
