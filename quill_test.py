@@ -14,11 +14,8 @@ class Game(quill.Window):
 
         self.loot_small_chest = quill.LootTable(self, "Small Chest", [self.sword_broken, self.potion_small_health, self.potion_medium_health, self.potion_large_health])
 
-        self.variable_option = tk.BooleanVar()
-        self.variable_option2 = tk.BooleanVar()
-        self.variable_option3 = tk.BooleanVar()
-        self.variable_radio = tk.IntVar()
-        self.variable_radio2 = tk.IntVar()
+        self.variable_state = tk.IntVar()
+        self.variable_maximized = tk.BooleanVar()
 
         self.menu()
 
@@ -55,26 +52,46 @@ class Game(quill.Window):
         self.enable()
         self.clear()
 
-        self.insert_text("end", "Options", tag="Heading-4")
+        self.insert_text("end", "Options", "Heading-3")
+        self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_checkbutton("end", self.variable_option, "Option\n")
-        self.insert_checkbutton("end", self.variable_option2, "Option2\n")
-        self.insert_checkbutton("end", self.variable_option3, "Option3\n")
+        self.insert_text("end", "Window Options", "Heading-4")
         self.insert_new_line()
-        self.insert_radiobutton("end", self.variable_radio, 0, "Radio\n")
-        self.insert_radiobutton("end", self.variable_radio, 1, "Radio2\n")
-        self.insert_radiobutton("end", self.variable_radio, 2, "Radio3\n")
+        self.insert_radiobutton("end", self.variable_state, 0, "Normal", command=self.check_state)
         self.insert_new_line()
-        self.insert_radiobutton("end", self.variable_radio2, 0, "Radio\n")
-        self.insert_radiobutton("end", self.variable_radio2, 1, "Radio2\n")
-        self.insert_radiobutton("end", self.variable_radio2, 2, "Radio3\n")
+        self.insert_radiobutton("end", self.variable_state, 1, "Full Screen", command=self.check_state)
+        self.insert_new_line()
+        self.insert_radiobutton("end", self.variable_state, 2, "Border-less", command=self.check_state)
+        self.insert_new_line()
+        self.insert_checkbutton("end", self.variable_maximized, "Maximized", command=self.check_maximized)
+        self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_command("end", "< Back\n", command=self.menu)
+        self.insert_new_line()
+        self.insert_command("end", "< Back", self.menu)
 
         self.goto_end()
         self.disable()
+
+    def check_state(self, *args):
+        if self.variable_state.get() == 0:
+            self.add_borders()
+            self.unfullscreen()
+
+        elif self.variable_state.get() == 1:
+            self.add_borders()
+            self.fullscreen()
+
+        elif self.variable_state.get() == 2:
+            self.unfullscreen()
+            self.remove_borders()
+
+    def check_maximized(self, *args):
+        if self.variable_maximized.get():
+            self.normal()
+        else:
+            self.maximise()
 
     def stone_walls(self, *args):
         self.enable()
