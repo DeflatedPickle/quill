@@ -14,11 +14,13 @@ class LootTable(object):
 
     def pick_item(self):
         """Picks a random item from the table."""
-        return self.items[random.randint(0, len(self.window.player.inventory)) - 1]
+        return self.items[random.randint(0, len(self.items)) - 1]
 
     def open(self, *args):
         """Opens the container and gives the player an item inside."""
-        self.window.player.give(self.pick_item())
+        item = self.pick_item()
+        self.window.player.give(item)
+        return item
 
     def get_items(self, *args):
         """Returns all items in the chest."""

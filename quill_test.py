@@ -5,14 +5,20 @@ import tkinter as tk
 class Game(quill.Window):
     def startup(self):
         self.sword_broken = quill.Item(self, "Broken Sword", {"weapon": {"type": "sword", "damage": 5}},
-                                           rarity="Common")
+                                       rarity="Common")
         self.sword_of_doom = quill.Item(self, "Sword of Doom", {"weapon": {"type": "sword", "damage": 150}},
-                                            rarity="Legendary")
-        self.potion_small_health = quill.Item(self, "Small Potion of Health", {"potion": {"type": "health", "amount": 15}}, rarity="Common")
-        self.potion_medium_health = quill.Item(self, "Medium Potion of Health", {"potion": {"type": "health", "amount": 30}}, rarity="Uncommon")
-        self.potion_large_health = quill.Item(self, "Large Potion of Health", {"potion": {"type": "health", "amount": 50}}, rarity="Rare")
+                                        rarity="Legendary")
+        self.potion_small_health = quill.Item(self, "Small Potion of Health",
+                                              {"potion": {"type": "health", "amount": 15}}, rarity="Common")
+        self.potion_medium_health = quill.Item(self, "Medium Potion of Health",
+                                               {"potion": {"type": "health", "amount": 30}}, rarity="Uncommon")
+        self.potion_large_health = quill.Item(self, "Large Potion of Health",
+                                              {"potion": {"type": "health", "amount": 50}}, rarity="Rare")
 
-        self.loot_small_chest = quill.LootTable(self, "Small Chest", [self.sword_broken, self.potion_small_health, self.potion_medium_health, self.potion_large_health])
+        self.loot_small_chest = quill.LootTable(self, "Small Chest", [self.sword_broken,
+                                                                      self.potion_small_health,
+                                                                      self.potion_medium_health,
+                                                                      self.potion_large_health])
 
         self.variable_state = tk.IntVar()
         self.variable_maximized = tk.BooleanVar()
@@ -111,10 +117,12 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You take a few steps back before ramming your shoulder into the wall. The wall crumbles as you smash through. In front of you lies a ")
+        self.insert_text("end", "You take a few steps back before ramming your shoulder into the wall. The wall "
+                                "crumbles as you smash through. In front of you lies a ")
         self.insert_trigger("end", "long path", self.long_path)
         self.insert_text("end", ". You also notice a ")
-        self.insert_container("end", self.loot_small_chest, self.small_chest)
+        # self.insert_container("end", self.loot_small_chest, self.small_chest)
+        self.insert_container("end", self.loot_small_chest, self.open_small_chest)
         self.insert_text("end", " tucked away in the corner of the room.")
 
         self.disable_extend("Extend-dirty-normal")
@@ -130,7 +138,8 @@ class Game(quill.Window):
             self.insert_text("end", "You ignore the chest and make your way down the path. ")
         else:
             self.insert_text("end", "You take whatever was in the chest and make your way down the path. ")
-        self.insert_text("end", "You stroll down the long path till you come to a split in the path. To the right of you, there's a ")
+        self.insert_text("end", "You stroll down the long path till you come to a split in the path. To the right of "
+                                "you, there's a ")
         self.insert_trigger("end", "foggy path", self.foggy_path)
         self.insert_text("end", " and in front of you, the ")
         self.insert_trigger("end", "path continues", self.path_continues)
@@ -147,6 +156,19 @@ class Game(quill.Window):
 
         self.insert_text("end", "You walk towards the chest and open it. Inside of the chest was a ")
         self.insert_item("end", self.sword_broken)
+        self.insert_text("end", ".")
+
+        self.goto_end()
+        self.disable()
+
+    def open_small_chest(self, *args):
+        self.enable()
+        self.insert_new_line()
+        self.insert_new_line()
+
+        item = self.loot_small_chest.open()
+        self.insert_text("end", "You found a ")
+        self.insert_item("end", item)
         self.insert_text("end", ".")
 
         self.goto_end()
