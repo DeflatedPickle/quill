@@ -1,6 +1,6 @@
 __title__ = "Quest"
 __author__ = "DeflatedPickle"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 
 class Quest(object):
@@ -10,3 +10,15 @@ class Quest(object):
         self.reward = reward
         self.goal = goal
         self.description = description
+
+    def complete(self, *args):
+        """Complete the Quest."""
+        pass
+
+    def fail(self, *args):
+        """Fail a Quest."""
+        pass
+
+    def hand_in(self, *args):
+        """Hand in a Quest."""
+        pass

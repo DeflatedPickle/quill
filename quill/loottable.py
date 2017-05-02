@@ -2,11 +2,11 @@ import random
 
 __title__ = "LootTable"
 __author__ = "DeflatedPickle"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 class LootTable(object):
-    """Creates a loot table."""
+    """Creates a Loot Table."""
     def __init__(self, window, name: str, items: list):
         self.window = window
         self.name = name

@@ -20,6 +20,10 @@ class Game(quill.Window):
                                                                       self.potion_medium_health,
                                                                       self.potion_large_health])
 
+        # self.merchant_frank_lyatut = quill.Merchant(self, name="Frank Lyatut", difference=0,
+        #                                             inventory=[self.potion_small_health,
+        #                                                        self.potion_medium_health], money=100)
+
         self.variable_state = tk.IntVar()
         self.variable_maximized = tk.BooleanVar()
 
@@ -179,9 +183,26 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You turn to the right and head down the foggy path.")
+        self.insert_text("end", "You turn to the right and head down the foggy path. ")
+        self.insert_command("end", "Keep Going", command=self.keep_going)
+        self.insert_text("end", ".")
 
         self.toggle_trigger("Trigger-pathcontinues")
+        self.goto_end()
+        self.disable()
+
+    def keep_going(self, *args):
+        self.enable()
+        self.insert_new_line()
+        self.insert_new_line()
+
+        self.insert_text("end", "You keep walking down the path. As you walk, you start to see a shadow. You hear a "
+                                "faint voice and keep walking towards the figure. You see the figure in plain sight, "
+                                "and it turns out to be a merchant, sitting down. They introduce themselves, they're "
+                                "called ")
+        self.insert_merchant("end", self.merchant_frank_lyatut)
+        self.insert_text("end", ".")
+
         self.goto_end()
         self.disable()
 

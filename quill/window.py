@@ -11,7 +11,7 @@ __version__ = "1.3.2"
 
 
 class Window(tk.Tk):
-    """Creates the window used for the game."""
+    """Creates the Window used for the game."""
     def __init__(self, title="Quill", icon=None, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title(title)
@@ -97,6 +97,8 @@ class Window(tk.Tk):
     def disable(self, *args):
         """Used to disable the text."""
         self.text.configure(state="disable")
+
+    # Insert Methods
 
     def insert_text(self, index: int or str, what: str, tag="Paragraph", *args):
         """Inserts a string of text into the game."""
@@ -329,6 +331,8 @@ class Window(tk.Tk):
         """Adds a tab to the game."""
         self.text.insert("end", "\t")
 
+    # Tag Methods
+
     def new_tag(self, tag: str, **options):
         """Creates a new tag."""
         self.text.tag_configure(tag, options)
@@ -363,6 +367,8 @@ class Window(tk.Tk):
     def goto_end(self, *args):
         """Scrolls the text widget to the bottom."""
         self.text.see("end")
+
+    # Window Methods
 
     def normal(self, *args):
         """Un-maximizes the window."""

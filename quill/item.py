@@ -38,6 +38,9 @@ class Item(object):
         self.window.enable()
         self.window.insert_new_line()
         self.window.insert_new_line()
-        self.window.text.insert("end", "Name: {}\nInfo: {}\nRarity: {}\n".format(self.name, self.info, self.rarity), "Quote")
+
+        self.window.text.insert("end", "Name: {}\nInfo: {}\nRarity: {}\n".format(self.name, self.info, self.rarity),
+                                "Quote")
+
         self.window.goto_end()
         self.window.disable()
