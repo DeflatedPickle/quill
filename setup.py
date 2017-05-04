@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="quill",
-      version="1.5.0",
+      version="1.8.0",
       description="A Python library used to create text-based games with TkInter.",
       author="DeflatedPickle",
       author_email="DeflatedPickle@gmail.com",
