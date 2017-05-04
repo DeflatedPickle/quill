@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""""""
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
@@ -11,7 +15,7 @@ from .quest import Quest
 
 __title__ = "Window"
 __author__ = "DeflatedPickle"
-__version__ = "1.7.20"
+__version__ = "1.8.0"
 
 
 class Window(tk.Tk):
@@ -57,27 +61,39 @@ class Window(tk.Tk):
         self.colour_text_background_active = "light grey"
 
         self.colour_command = "blue"
+        self.id_current_command = 0
 
         self.colour_extend_on = "turquoise"
         self.colour_extend_off = "slate blue"
+        self.id_current_extend = 0
 
         self.colour_check_on = "green"
         self.colour_check_off = "red"
+        self.id_current_check = 0
 
         self.colour_radio_on = "green"
         self.colour_radio_off = "red"
+        self.id_current_radio = 0
 
         self.colour_trigger_on = "green"
         self.colour_trigger_off = "red"
+        self.id_current_trigger = 0
 
         self.colour_container_on = "orange"
         self.colour_container_off = "cyan"
+        self.id_current_container = 0
 
         self.colour_item_on = "gold"
         self.colour_item_off = "purple"
+        self.id_current_item = 0
 
         self.colour_merchant_on = "gold"
         self.colour_merchant_off = "purple"
+        self.id_current_merchant = 0
+
+        self.colour_quest_on = "gold"
+        self.colour_quest_off = "purple"
+        self.id_current_quest = 0
 
         value = 30
         for i in range(5):
@@ -104,18 +120,18 @@ class Window(tk.Tk):
 
     # Insert Methods
 
-    def insert_text(self, what: str="", index: int or str="end", tag: str="Paragraph", *args):
+    def insert_text(self, what: str="", fill_line: bool=False, index: int or str="end", tag: str="Paragraph", *args):
         """Inserts a string of text into the game."""
-        self.text.insert(index, what, tag)
+        self.text.insert(index, what + "\n" if fill_line else what, tag)
 
-    def insert_extending_text(self, what: str="", extend: str="", index: int or str="end", command=None, *args):
+    def insert_extending_text(self, what: str="", extend: str="", fill_line: bool=False, index: int or str="end", command=None, *args):
         """Inserts a string of text that can be extended."""
-        tag = "Extend-{}-{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "normal")
-        tag2 = "Extend-{}-{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "extend")
+        tag = "Extend-{}-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "normal", self.id_current_extend)
+        tag2 = "Extend-{}-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "extend", self.id_current_extend)
         self.text.tag_configure(tag, foreground=self.colour_extend_on, elide=False)
         self.text.tag_configure(tag2, foreground=self.colour_extend_off, elide=True)
-        self.text.insert(index, what, tag)
-        self.text.insert(index, extend, tag2)
+        self.text.insert(index, what + "\n" if fill_line else what, tag)
+        self.text.insert(index, extend + "\n" if fill_line else extend, tag2)
 
         self.unbind_tag(tag, release=True, both=True)
 
@@ -124,6 +140,8 @@ class Window(tk.Tk):
 
         self.bind_cursor(tag)
         self.bind_background(tag)
+
+        self.id_current_extend += 1
 
     def toggle_extend(self, tag: str, tag2: str, *args):
         """Toggles an extending text off."""
@@ -136,11 +154,11 @@ class Window(tk.Tk):
         self.text.tag_unbind(tag, "<ButtonRelease-1>")
         self.text.tag_unbind(tag, "<Button-1>")
 
-    def insert_command(self, what: str="", index: int or str="end", command=None, *args):
+    def insert_command(self, what: str="", fill_line: bool=True, index: int or str="end", command=None, *args):
         """Inserts a click-able command into the game."""
-        tag = "Command-{}".format(re.sub("[^0-9a-zA-Z]+", "", what))
+        tag = "Command-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", what), self.id_current_command)
         self.text.tag_configure(tag, foreground=self.colour_command)
-        self.text.insert(index, what, tag)
+        self.text.insert(index, what + "\n" if fill_line else what, tag)
 
         self.unbind_tag(tag, release=True)
 
@@ -149,14 +167,16 @@ class Window(tk.Tk):
         self.bind_cursor(tag)
         self.bind_background(tag)
 
-    def insert_checkbutton(self, variable: tk.BooleanVar, what: str="", index: int or str="end", command=None, *args):
+        self.id_current_command += 1
+
+    def insert_checkbutton(self, variable: tk.BooleanVar, what: str="", fill_line: bool=True, index: int or str="end", command=None, *args):
         """Insert a checkbutton into the game."""
-        tag = "Check-{}".format(re.sub("[^0-9a-zA-Z]+", "", what))
+        tag = "Check-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", what), self.id_current_check)
         if variable.get():
             self.text.tag_configure(tag, foreground=self.colour_check_on)
         elif not variable.get():
             self.text.tag_configure(tag, foreground=self.colour_check_off)
-        self.text.insert(index, what, tag)
+        self.text.insert(index, what + "\n" if fill_line else what, tag)
 
         self.unbind_tag(tag)
 
@@ -166,6 +186,8 @@ class Window(tk.Tk):
         self.bind_cursor(tag)
         self.bind_background(tag)
 
+        self.id_current_check += 1
+
     def toggle_check(self, variable: tk.BooleanVar, tag: str, *args):
         """Toggles a checkbutton."""
         variable.set(not variable.get())
@@ -174,14 +196,14 @@ class Window(tk.Tk):
         elif not variable.get():
             self.text.tag_configure(tag, foreground=self.colour_check_off)
 
-    def insert_radiobutton(self, variable: tk.IntVar, value: int, what: str="", index: int or str="end", command=None, *args):
+    def insert_radiobutton(self, variable: tk.IntVar, value: int, what: str="", fill_line: bool=True, index: int or str="end", command=None, *args):
         """Inserts a radiobutton into the game."""
-        tag = "Radio-{}-{}".format(re.sub("[^0-9a-zA-Z]+", "", str(variable)), str(value))
+        tag = "Radio-{}-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", str(variable)), str(value), self.id_current_radio)
         if variable.get() == value:
             self.text.tag_configure(tag, foreground=self.colour_radio_on)
         elif variable.get() != value:
             self.text.tag_configure(tag, foreground=self.colour_radio_off)
-        self.text.insert(index, what, tag)
+        self.text.insert(index, what + "\n" if fill_line else what, tag)
 
         self.unbind_tag(tag, release=True, both=True)
 
@@ -191,23 +213,30 @@ class Window(tk.Tk):
         self.bind_cursor(tag)
         self.bind_background(tag)
 
+        self.id_current_radio += 1
+
     def toggle_radio(self, variable: tk.IntVar, value: int, tag: str, *args):
         """Toggles a radiobutton."""
         variable.set(value)
-        for i in self.text.tag_names():
-            if "{}_{}".format(i[:8], i[8:])[:-2] == "Radio-{}".format(str(variable)):
-                self.text.tag_configure(i, foreground=self.colour_radio_off)
+        for name in self.text.tag_names():
+            name_cut = "{}_{}".format(name.split(":")[0][:8], name.split(":")[0][8:]).split("-")
+            try:
+                name_cut = name_cut[0] + "-" + name_cut[1]
+            except IndexError:
+                pass
+            if name_cut == "Radio-{}".format(str(variable)):
+                self.text.tag_configure(name, foreground=self.colour_radio_off)
 
         if variable.get() == value:
             self.text.tag_configure(tag, foreground=self.colour_radio_on)
         elif variable.get() != value:
             self.text.tag_configure(tag, foreground=self.colour_radio_off)
 
-    def insert_trigger(self, what: str="", index: int or str="end", command=None, *args):
+    def insert_trigger(self, what: str="", fill_line: bool=False, index: int or str="end", command=None, *args):
         """Inserts a trigger into the game."""
-        tag = "Trigger-{}".format(re.sub("[^0-9a-zA-Z]+", "", what))
+        tag = "Trigger-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", what), self.id_current_trigger)
         self.text.tag_configure(tag, foreground=self.colour_trigger_on)
-        self.text.insert(index, what, tag)
+        self.text.insert(index, what + "\n" if fill_line else what, tag)
 
         self.unbind_tag(tag)
 
@@ -216,6 +245,8 @@ class Window(tk.Tk):
 
         self.bind_cursor(tag)
         self.bind_background(tag)
+
+        self.id_current_trigger += 1
 
     def toggle_trigger(self, tag: str, *args):
         """Toggles a trigger off."""
@@ -231,11 +262,11 @@ class Window(tk.Tk):
 
     # Insert Classes
 
-    def insert_container(self, loot_table: LootTable, index: int or str="end", command=None, *args):
+    def insert_container(self, loot_table: LootTable, fill_line: bool=False, index: int or str="end", command=None, *args):
         """Insert a checkbutton into the game."""
-        tag = "Container-{}".format(re.sub("[^0-9a-zA-Z]+", "", loot_table.name))
+        tag = "Container-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", loot_table.name), self.id_current_container)
         self.text.tag_configure(tag, foreground=self.colour_container_on)
-        self.text.insert(index, loot_table.name, tag)
+        self.text.insert(index, loot_table.name + "\n" if fill_line else loot_table.name, tag)
 
         self.unbind_tag(tag)
 
@@ -244,6 +275,8 @@ class Window(tk.Tk):
 
         self.bind_cursor(tag)
         self.bind_background(tag)
+
+        self.id_current_container += 1
 
     def open_container(self, loot_table: LootTable, tag: str, *args):
         """Opens a container."""
@@ -263,11 +296,11 @@ class Window(tk.Tk):
         elif self.text.tag_cget(tag, "foreground") == self.colour_container_off:
             return False
 
-    def insert_item(self, item: Item, index: int or str="end", *args):
+    def insert_item(self, item: Item, fill_line: bool=False, index: int or str="end", *args):
         """Inserts an item into the game."""
-        tag = "Item-{}".format(re.sub("[^0-9a-zA-Z]+", "", item.name))
+        tag = "Item-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", item.name), self.id_current_item)
         self.text.tag_configure(tag, foreground=self.colour_item_on)
-        self.text.insert(index, item.name, tag)
+        self.text.insert(index, item.name + "\n" if fill_line else item.name, tag)
 
         self.unbind_tag(tag)
 
@@ -276,6 +309,8 @@ class Window(tk.Tk):
         self.bind_cursor(tag)
         self.bind_background(tag)
 
+        self.id_current_item += 1
+
     def toggle_item(self, item: Item, tag: str, *args):
         """Toggles an item."""
         item.show_stats()
@@ -283,7 +318,7 @@ class Window(tk.Tk):
 
     def insert_merchant(self, merchant: Merchant, index: int or str="end", *args):
         """Inserts an merchant into the game."""
-        tag = "Merchant-{}".format(re.sub("[^0-9a-zA-Z]+", "", merchant.name))
+        tag = "Merchant-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", merchant.name), self.id_current_merchant)
         self.text.tag_configure(tag, foreground=self.colour_merchant_on)
         self.text.insert(index, merchant.name, tag)
 
@@ -294,16 +329,18 @@ class Window(tk.Tk):
         self.bind_cursor(tag)
         self.bind_background(tag)
 
+        self.id_current_merchant += 1
+
     def toggle_merchant(self, merchant: Merchant, tag: str, *args):
         """Toggles a merchant."""
         merchant.show_inventory()
         self.text.tag_configure(tag, foreground=self.colour_merchant_off)
 
-    def insert_quest(self, quest: Quest, index: int or str="end", *args):
+    def insert_quest(self, quest: Quest, fill_line: bool=False, index: int or str="end", *args):
         """Inserts a quest into the game."""
         tag = "Quest-{}".format(re.sub("[^0-9a-zA-Z]+", "", quest.name))
         self.text.tag_configure(tag, foreground=self.colour_merchant_on)
-        self.text.insert(index, quest.name, tag)
+        self.text.insert(index, quest.name + "\n" if fill_line else quest.name, tag)
 
     # Tag Methods
 

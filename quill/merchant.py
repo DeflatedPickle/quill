@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""""""
+
 __title__ = "Merchant"
 __author__ = "DeflatedPickle"
 __version__ = "1.1.1"

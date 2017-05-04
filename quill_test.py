@@ -41,9 +41,9 @@ class Game(quill.Window):
         self.insert_text("Maze Game", tag="Heading-4")
         self.insert_new_line()
 
-        self.insert_command("> Start\n", command=self.start)
-        self.insert_command("> Options\n", command=self.options)
-        self.insert_command("> Exit\n", command=self.exit)
+        self.insert_command("> Start", command=self.start)
+        self.insert_command("> Options", command=self.options)
+        self.insert_command("> Exit", command=self.exit)
 
         self.goto_end()
         self.disable()
@@ -134,7 +134,7 @@ class Game(quill.Window):
         self.insert_container(self.loot_small_chest, command=self.open_small_chest)
         self.insert_text(" tucked away in the corner of the room.")
 
-        self.disable_extend("Extend-dirty-normal")
+        self.disable_extend("Extend-dirty-normal:0")
         self.goto_end()
         self.disable()
 
@@ -143,7 +143,7 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        if self.check_container("Container-SmallChest"):
+        if self.check_container("Container-SmallChest:0"):
             self.insert_text("You ignore the chest and make your way down the path. ")
         else:
             self.insert_text("You take whatever was in the chest and make your way down the path. ")
@@ -154,7 +154,7 @@ class Game(quill.Window):
         self.insert_trigger("path continues", command=self.path_continues)
         self.insert_text(".")
 
-        self.lock_container("Container-SmallChest")
+        self.lock_container("Container-SmallChest:0")
         self.goto_end()
         self.disable()
 
@@ -180,7 +180,7 @@ class Game(quill.Window):
         self.insert_trigger("Keep Going", command=self.keep_going)
         self.insert_text(".")
 
-        self.toggle_trigger("Trigger-pathcontinues")
+        self.toggle_trigger("Trigger-pathcontinues:0")
         self.goto_end()
         self.disable()
 

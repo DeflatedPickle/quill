@@ -1,4 +1,8 @@
-__title__ = "quest"
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""""""
+
+__title__ = "Quest"
 __author__ = "DeflatedPickle"
 __version__ = "1.1.0"
 

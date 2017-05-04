@@ -1,4 +1,8 @@
-__title__ = "player"
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""""""
+
+__title__ = "Player"
 __author__ = "DeflatedPickle"
 __version__ = "1.2.0"
 
