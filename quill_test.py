@@ -1,4 +1,6 @@
 import quill
+from quill.merchant import Merchant
+from quill.quest import Quest
 import tkinter as tk
 
 
@@ -20,9 +22,12 @@ class Game(quill.Window):
                                                                       self.potion_medium_health,
                                                                       self.potion_large_health])
 
-        # self.merchant_frank_lyatut = quill.Merchant(self, name="Frank Lyatut", difference=0,
-        #                                             inventory=[self.potion_small_health,
-        #                                                        self.potion_medium_health], money=100)
+        self.merchant_frank_lyatut = Merchant(self, name="Frank Lyatut", price_difference=0,
+                                              inventory=[self.potion_small_health,
+                                                         self.potion_medium_health], money=100)
+
+        self.simple_quest = Quest(self, "Simple Quest", [self.sword_of_doom], "Do something.",
+                                  "You were told to do something.")
 
         self.variable_state = tk.IntVar()
         self.variable_maximized = tk.BooleanVar()
@@ -33,12 +38,12 @@ class Game(quill.Window):
         self.enable()
         self.clear()
 
-        self.insert_text("end", "Maze Game", tag="Heading-4")
+        self.insert_text("Maze Game", tag="Heading-4")
         self.insert_new_line()
 
-        self.insert_command("end", "> Start\n", command=self.start)
-        self.insert_command("end", "> Options\n", command=self.options)
-        self.insert_command("end", "> Exit\n", command=self.exit)
+        self.insert_command("> Start\n", command=self.start)
+        self.insert_command("> Options\n", command=self.options)
+        self.insert_command("> Exit\n", command=self.exit)
 
         self.goto_end()
         self.disable()
@@ -47,13 +52,13 @@ class Game(quill.Window):
         self.enable()
         self.clear()
 
-        self.insert_text("end", "Chapter 1", tag="Heading-4")
-        self.insert_text("end", "- Awaken", tag="Heading-5")
+        self.insert_text("Chapter 1", tag="Heading-4")
+        self.insert_text("- Awaken", tag="Heading-5")
         self.insert_new_line()
 
-        self.insert_text("end", "You wake up, surrounded by ")
-        self.insert_trigger("end", "stone walls", self.stone_walls)
-        self.insert_text("end", ".")
+        self.insert_text("You wake up, surrounded by ")
+        self.insert_trigger("stone walls", command=self.stone_walls)
+        self.insert_text(".")
 
         self.goto_end()
         self.disable()
@@ -62,24 +67,24 @@ class Game(quill.Window):
         self.enable()
         self.clear()
 
-        self.insert_text("end", "Options", "Heading-3")
+        self.insert_text("Options", tag="Heading-3")
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "Window Options", "Heading-4")
+        self.insert_text("Window Options", tag="Heading-4")
         self.insert_new_line()
-        self.insert_radiobutton("end", self.variable_state, 0, "Normal", command=self.check_state)
+        self.insert_radiobutton(self.variable_state, 0, "Normal", command=self.check_state)
         self.insert_new_line()
-        self.insert_radiobutton("end", self.variable_state, 1, "Full Screen", command=self.check_state)
+        self.insert_radiobutton(self.variable_state, 1, "Full Screen", command=self.check_state)
         self.insert_new_line()
-        self.insert_radiobutton("end", self.variable_state, 2, "Border-less", command=self.check_state)
+        self.insert_radiobutton(self.variable_state, 2, "Border-less", command=self.check_state)
         self.insert_new_line()
-        self.insert_checkbutton("end", self.variable_maximized, "Maximized", command=self.check_maximized)
+        self.insert_checkbutton(self.variable_maximized, "Maximized", command=self.check_maximized)
         self.insert_new_line()
         self.insert_new_line()
 
         self.insert_new_line()
-        self.insert_command("end", "< Back", self.menu)
+        self.insert_command("< Back", command=self.menu)
 
         self.goto_end()
         self.disable()
@@ -108,10 +113,10 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You search the walls. Upon inspection, you notice that the walls are ")
-        self.insert_extending_text("end", "...", "dirty")
-        self.insert_text("end", ". You brush a bit of dirt off and find a bit of wall weak enough to ")
-        self.insert_trigger("end", "break through", self.break_through)
+        self.insert_text("You search the walls. Upon inspection, you notice that the walls are ")
+        self.insert_extending_text("...", extend="dirty")
+        self.insert_text(". You brush a bit of dirt off and find a bit of wall weak enough to ")
+        self.insert_trigger("break through", command=self.break_through)
 
         self.goto_end()
         self.disable()
@@ -121,13 +126,13 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You take a few steps back before ramming your shoulder into the wall. The wall "
-                                "crumbles as you smash through. In front of you lies a ")
-        self.insert_trigger("end", "long path", self.long_path)
-        self.insert_text("end", ". You also notice a ")
+        self.insert_text("You take a few steps back before ramming your shoulder into the wall. The wall "
+                         "crumbles as you smash through. In front of you lies a ")
+        self.insert_trigger("long path", command=self.long_path)
+        self.insert_text(". You also notice a ")
         # self.insert_container("end", self.loot_small_chest, self.small_chest)
-        self.insert_container("end", self.loot_small_chest, self.open_small_chest)
-        self.insert_text("end", " tucked away in the corner of the room.")
+        self.insert_container(self.loot_small_chest, command=self.open_small_chest)
+        self.insert_text(" tucked away in the corner of the room.")
 
         self.disable_extend("Extend-dirty-normal")
         self.goto_end()
@@ -139,29 +144,17 @@ class Game(quill.Window):
         self.insert_new_line()
 
         if self.check_container("Container-SmallChest"):
-            self.insert_text("end", "You ignore the chest and make your way down the path. ")
+            self.insert_text("You ignore the chest and make your way down the path. ")
         else:
-            self.insert_text("end", "You take whatever was in the chest and make your way down the path. ")
-        self.insert_text("end", "You stroll down the long path till you come to a split in the path. To the right of "
-                                "you, there's a ")
-        self.insert_trigger("end", "foggy path", self.foggy_path)
-        self.insert_text("end", " and in front of you, the ")
-        self.insert_trigger("end", "path continues", self.path_continues)
-        self.insert_text("end", ".")
+            self.insert_text("You take whatever was in the chest and make your way down the path. ")
+        self.insert_text("You stroll down the long path till you come to a split in the path. To the right of "
+                         "you, there's a ")
+        self.insert_trigger("foggy path", command=self.foggy_path)
+        self.insert_text(" and in front of you, the ")
+        self.insert_trigger("path continues", command=self.path_continues)
+        self.insert_text(".")
 
         self.lock_container("Container-SmallChest")
-        self.goto_end()
-        self.disable()
-
-    def small_chest(self, *args):
-        self.enable()
-        self.insert_new_line()
-        self.insert_new_line()
-
-        self.insert_text("end", "You walk towards the chest and open it. Inside of the chest was a ")
-        self.insert_item("end", self.sword_broken)
-        self.insert_text("end", ".")
-
         self.goto_end()
         self.disable()
 
@@ -171,9 +164,9 @@ class Game(quill.Window):
         self.insert_new_line()
 
         item = self.loot_small_chest.open()
-        self.insert_text("end", "You found a ")
-        self.insert_item("end", item)
-        self.insert_text("end", ".")
+        self.insert_text("You found a ")
+        self.insert_item(item)
+        self.insert_text(".")
 
         self.goto_end()
         self.disable()
@@ -183,9 +176,9 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You turn to the right and head down the foggy path. ")
-        self.insert_command("end", "Keep Going", command=self.keep_going)
-        self.insert_text("end", ".")
+        self.insert_text("You turn to the right and head down the foggy path. ")
+        self.insert_trigger("Keep Going", command=self.keep_going)
+        self.insert_text(".")
 
         self.toggle_trigger("Trigger-pathcontinues")
         self.goto_end()
@@ -196,12 +189,12 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You keep walking down the path. As you walk, you start to see a shadow. You hear a "
-                                "faint voice and keep walking towards the figure. You see the figure in plain sight, "
-                                "and it turns out to be a merchant, sitting down. They introduce themselves, they're "
-                                "called ")
-        self.insert_merchant("end", self.merchant_frank_lyatut)
-        self.insert_text("end", ".")
+        self.insert_text("You keep walking down the path. As you walk, you start to see a shadow. You hear a "
+                         "faint voice and keep walking towards the figure. You see the figure in plain sight, "
+                         "and it turns out to be a merchant, sitting down. They introduce themselves, they're "
+                         "called ")
+        self.insert_merchant(self.merchant_frank_lyatut)
+        self.insert_text(".")
 
         self.goto_end()
         self.disable()
@@ -211,7 +204,11 @@ class Game(quill.Window):
         self.insert_new_line()
         self.insert_new_line()
 
-        self.insert_text("end", "You continue to walk forwards and finally exit the fog.")
+        self.insert_text("You continue to walk forwards and finally exit the fog. You look around. You are in ")
+        self.insert_extending_text("...", extend="a large gray cube")
+        self.insert_text(". Below you notice a ")
+        self.insert_extending_text("look down", extend="note")
+        self.insert_text(".")
 
         self.toggle_trigger("Trigger-foggypath")
         self.goto_end()
@@ -221,6 +218,7 @@ class Game(quill.Window):
 def main():
     app = Game(title="Maze Game")
     app.mainloop()
+
 
 if __name__ == "__main__":
     main()

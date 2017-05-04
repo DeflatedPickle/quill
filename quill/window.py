@@ -3,11 +3,15 @@ from tkinter import ttk
 from tkinter import font
 import re
 
-from .player import *
+from .player import Player
+from .loottable import LootTable
+from .item import Item
+from .merchant import Merchant
+from .quest import Quest
 
 __title__ = "Window"
 __author__ = "DeflatedPickle"
-__version__ = "1.3.2"
+__version__ = "1.7.20"
 
 
 class Window(tk.Tk):
@@ -100,11 +104,11 @@ class Window(tk.Tk):
 
     # Insert Methods
 
-    def insert_text(self, index: int or str, what: str, tag="Paragraph", *args):
+    def insert_text(self, what: str="", index: int or str="end", tag: str="Paragraph", *args):
         """Inserts a string of text into the game."""
         self.text.insert(index, what, tag)
 
-    def insert_extending_text(self, index: int or str, what: str, extend: str, command=None, *args):
+    def insert_extending_text(self, what: str="", extend: str="", index: int or str="end", command=None, *args):
         """Inserts a string of text that can be extended."""
         tag = "Extend-{}-{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "normal")
         tag2 = "Extend-{}-{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "extend")
@@ -113,46 +117,39 @@ class Window(tk.Tk):
         self.text.insert(index, what, tag)
         self.text.insert(index, extend, tag2)
 
-        self.text.tag_unbind(tag, "<ButtonRelease-1>")
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag, release=True, both=True)
 
         self.text.tag_bind(tag, "<ButtonRelease-1>", command, "+")
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_extend(tag, tag2), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def toggle_extend(self, tag, tag2, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def toggle_extend(self, tag: str, tag2: str, *args):
         """Toggles an extending text off."""
         self.text.tag_configure(tag, elide=True)
         self.text.tag_configure(tag2, elide=False)
 
-    def disable_extend(self, tag, *args):
+    def disable_extend(self, tag: str, *args):
         """Disables an extending text."""
         self.text.tag_configure(tag, foreground=self.colour_extend_off)
         self.text.tag_unbind(tag, "<ButtonRelease-1>")
         self.text.tag_unbind(tag, "<Button-1>")
 
-    def insert_command(self, index: int or str, what: str, command=None, *args):
+    def insert_command(self, what: str="", index: int or str="end", command=None, *args):
         """Inserts a click-able command into the game."""
         tag = "Command-{}".format(re.sub("[^0-9a-zA-Z]+", "", what))
         self.text.tag_configure(tag, foreground=self.colour_command)
         self.text.insert(index, what, tag)
 
-        self.text.tag_unbind(tag, "<ButtonRelease-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag, release=True)
 
         self.text.tag_bind(tag, "<ButtonRelease-1>", command, "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def insert_checkbutton(self, index: int or str, variable, what: str, command=None, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def insert_checkbutton(self, variable: tk.BooleanVar, what: str="", index: int or str="end", command=None, *args):
         """Insert a checkbutton into the game."""
         tag = "Check-{}".format(re.sub("[^0-9a-zA-Z]+", "", what))
         if variable.get():
@@ -161,18 +158,15 @@ class Window(tk.Tk):
             self.text.tag_configure(tag, foreground=self.colour_check_off)
         self.text.insert(index, what, tag)
 
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag)
 
         self.text.tag_bind(tag, "<Button-1>", command, "+")
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_check(variable, tag), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def toggle_check(self, variable, tag, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def toggle_check(self, variable: tk.BooleanVar, tag: str, *args):
         """Toggles a checkbutton."""
         variable.set(not variable.get())
         if variable.get():
@@ -180,7 +174,7 @@ class Window(tk.Tk):
         elif not variable.get():
             self.text.tag_configure(tag, foreground=self.colour_check_off)
 
-    def insert_radiobutton(self, index: int or str, variable, value, what: str, command=None, *args):
+    def insert_radiobutton(self, variable: tk.IntVar, value: int, what: str="", index: int or str="end", command=None, *args):
         """Inserts a radiobutton into the game."""
         tag = "Radio-{}-{}".format(re.sub("[^0-9a-zA-Z]+", "", str(variable)), str(value))
         if variable.get() == value:
@@ -189,19 +183,15 @@ class Window(tk.Tk):
             self.text.tag_configure(tag, foreground=self.colour_radio_off)
         self.text.insert(index, what, tag)
 
-        self.text.tag_unbind(tag, "<ButtonRelease-1>")
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag, release=True, both=True)
 
         self.text.tag_bind(tag, "<ButtonRelease-1>", command, "+")
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_radio(variable, value, tag), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def toggle_radio(self, variable, value, tag, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def toggle_radio(self, variable: tk.IntVar, value: int, tag: str, *args):
         """Toggles a radiobutton."""
         variable.set(value)
         for i in self.text.tag_names():
@@ -213,111 +203,130 @@ class Window(tk.Tk):
         elif variable.get() != value:
             self.text.tag_configure(tag, foreground=self.colour_radio_off)
 
-    def insert_trigger(self, index: int or str, what: str, command=None, *args):
+    def insert_trigger(self, what: str="", index: int or str="end", command=None, *args):
         """Inserts a trigger into the game."""
         tag = "Trigger-{}".format(re.sub("[^0-9a-zA-Z]+", "", what))
         self.text.tag_configure(tag, foreground=self.colour_trigger_on)
         self.text.insert(index, what, tag)
 
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag)
 
         self.text.tag_bind(tag, "<Button-1>", command, "+")
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_trigger(tag), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def toggle_trigger(self, tag, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def toggle_trigger(self, tag: str, *args):
         """Toggles a trigger off."""
         self.text.tag_configure(tag, foreground=self.colour_trigger_off)
         self.text.tag_unbind(tag, "<Button-1>")
 
-    def check_trigger(self, tag, *args):
+    def check_trigger(self, tag: str, *args):
         """Checks the value of a trigger."""
         if self.text.tag_cget(tag, "foreground") == self.colour_trigger_on:
             return True
         elif self.text.tag_cget(tag, "foreground") == self.colour_trigger_off:
             return False
 
-    def insert_container(self, index: int or str, loot_table, command=None, *args):
+    # Insert Classes
+
+    def insert_container(self, loot_table: LootTable, index: int or str="end", command=None, *args):
         """Insert a checkbutton into the game."""
         tag = "Container-{}".format(re.sub("[^0-9a-zA-Z]+", "", loot_table.name))
         self.text.tag_configure(tag, foreground=self.colour_container_on)
         self.text.insert(index, loot_table.name, tag)
 
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag)
 
         self.text.tag_bind(tag, "<Button-1>", command, "+")
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.open_container(loot_table, tag), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def open_container(self, loot_table, tag, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def open_container(self, loot_table: LootTable, tag: str, *args):
         """Opens a container."""
         loot_table.open()
         self.text.tag_configure(tag, foreground=self.colour_container_off)
         self.text.tag_unbind(tag, "<Button-1>")
 
-    def lock_container(self, tag, *args):
+    def lock_container(self, tag: str, *args):
         """Locks a container."""
         self.text.tag_configure(tag, foreground=self.colour_container_off)
         self.text.tag_unbind(tag, "<Button-1>")
 
-    def check_container(self, tag, *args):
+    def check_container(self, tag: str, *args):
         """Checks the value of a container."""
         if self.text.tag_cget(tag, "foreground") == self.colour_container_on:
             return True
         elif self.text.tag_cget(tag, "foreground") == self.colour_container_off:
             return False
 
-    def insert_item(self, index: int or str, item, *args):
+    def insert_item(self, item: Item, index: int or str="end", *args):
         """Inserts an item into the game."""
         tag = "Item-{}".format(re.sub("[^0-9a-zA-Z]+", "", item.name))
         self.text.tag_configure(tag, foreground=self.colour_item_on)
         self.text.insert(index, item.name, tag)
 
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag)
 
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_item(item, tag), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def toggle_item(self, item, tag, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def toggle_item(self, item: Item, tag: str, *args):
         """Toggles an item."""
         item.show_stats()
         self.text.tag_configure(tag, foreground=self.colour_item_off)
 
-    def insert_merchant(self, index: int or str, merchant, *args):
+    def insert_merchant(self, merchant: Merchant, index: int or str="end", *args):
         """Inserts an merchant into the game."""
         tag = "Merchant-{}".format(re.sub("[^0-9a-zA-Z]+", "", merchant.name))
         self.text.tag_configure(tag, foreground=self.colour_merchant_on)
         self.text.insert(index, merchant.name, tag)
 
-        self.text.tag_unbind(tag, "<Button-1>")
-        self.text.tag_unbind(tag, "<Enter>")
-        self.text.tag_unbind(tag, "<Leave>")
+        self.unbind_tag(tag)
 
         self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_merchant(merchant, tag), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
-        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background_active), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
-        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
 
-    def toggle_merchant(self, merchant, tag, *args):
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+    def toggle_merchant(self, merchant: Merchant, tag: str, *args):
         """Toggles a merchant."""
         merchant.show_inventory()
         self.text.tag_configure(tag, foreground=self.colour_merchant_off)
+
+    def insert_quest(self, quest: Quest, index: int or str="end", *args):
+        """Inserts a quest into the game."""
+        tag = "Quest-{}".format(re.sub("[^0-9a-zA-Z]+", "", quest.name))
+        self.text.tag_configure(tag, foreground=self.colour_merchant_on)
+        self.text.insert(index, quest.name, tag)
+
+    # Tag Methods
+
+    def unbind_tag(self, tag, release=False, both=False):
+        """Unbinds a tag."""
+        self.text.tag_unbind(tag, "<Button-1>" if not release else "<ButtonRelease-1>")
+        if both:
+            self.text.tag_unbind(tag, "<Button-1>")
+        self.text.tag_unbind(tag, "<Enter>")
+        self.text.tag_unbind(tag, "<Leave>")
+
+    def bind_cursor(self, tag):
+        self.text.tag_bind(tag, "<Enter>", lambda *args: self.text.configure(cursor="hand2"), "+")
+        self.text.tag_bind(tag, "<Leave>", lambda *args: self.text.configure(cursor="arrow"), "+")
+
+    def bind_background(self, tag):
+        self.text.tag_bind(tag, "<Enter>",
+                           lambda *args: self.text.tag_configure(tag,
+                                                                 background=self.colour_text_background_active), "+")
+        self.text.tag_bind(tag, "<Leave>",
+                           lambda *args: self.text.tag_configure(tag, background=self.colour_text_background), "+")
+
+    # Insert Spaces
 
     def insert_new_line(self, *args):
         """Adds a new line to the game."""

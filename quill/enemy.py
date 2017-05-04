@@ -4,7 +4,8 @@ __version__ = "1.0.0"
 
 
 class Enemy(object):
-    """Creates an Enemy."""
+    """Creates an enemy."""
+    # TODO: Finish this class
     def __init__(self, name: str, damage: int, health: int, total_health: int):
         self.name = name
         self.damage = damage

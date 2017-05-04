@@ -1,6 +1,6 @@
 __title__ = "Item"
 __author__ = "DeflatedPickle"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 class Item(object):
@@ -35,12 +35,13 @@ class Item(object):
             print("{} is not a valid item rarity.".format(self.rarity))
 
     def show_stats(self, *args):
+        """Shows the stats of the item."""
+        # TODO: Improve how stats are shown
         self.window.enable()
         self.window.insert_new_line()
         self.window.insert_new_line()
 
-        self.window.text.insert("end", "Name: {}\nInfo: {}\nRarity: {}\n".format(self.name, self.info, self.rarity),
-                                "Quote")
+        self.window.insert_text(what="Name: {}\nInfo: {}\nRarity: {}\n".format(self.name, self.info, self.rarity), tag="Quote")
 
         self.window.goto_end()
         self.window.disable()

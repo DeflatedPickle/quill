@@ -6,7 +6,7 @@ __version__ = "1.0.1"
 
 
 class LootTable(object):
-    """Creates a Loot Table."""
+    """Creates a loot table."""
     def __init__(self, window, name: str, items: list):
         self.window = window
         self.name = name
