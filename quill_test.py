@@ -11,11 +11,11 @@ class Game(quill.Window):
         self.sword_of_doom = quill.Item(self, "Sword of Doom", {"weapon": {"type": "sword", "damage": 150}},
                                         rarity="Legendary")
         self.potion_small_health = quill.Item(self, "Small Potion of Health",
-                                              {"potion": {"type": "health", "amount": 15}}, rarity="Common")
+                                              {"potion": {"type": "health", "amount": 15}}, value=15, rarity="Common")
         self.potion_medium_health = quill.Item(self, "Medium Potion of Health",
-                                               {"potion": {"type": "health", "amount": 30}}, rarity="Uncommon")
+                                               {"potion": {"type": "health", "amount": 30}}, value=30, rarity="Uncommon")
         self.potion_large_health = quill.Item(self, "Large Potion of Health",
-                                              {"potion": {"type": "health", "amount": 50}}, rarity="Rare")
+                                              {"potion": {"type": "health", "amount": 50}}, value=45, rarity="Rare")
 
         self.loot_small_chest = quill.LootTable(self, "Small Chest", [self.sword_broken,
                                                                       self.potion_small_health,
@@ -24,13 +24,15 @@ class Game(quill.Window):
 
         self.merchant_frank_lyatut = Merchant(self, name="Frank Lyatut", price_difference=0,
                                               inventory=[self.potion_small_health,
-                                                         self.potion_medium_health], money=100)
+                                                         self.potion_medium_health], money=200)
 
         self.simple_quest = Quest(self, "Simple Quest", [self.sword_of_doom], "Do something.",
                                   "You were told to do something.")
 
         self.variable_state = tk.IntVar()
         self.variable_maximized = tk.BooleanVar()
+
+        self.player.money = 100
 
         self.menu()
 
@@ -74,13 +76,9 @@ class Game(quill.Window):
         self.insert_text("Window Options", tag="Heading-4")
         self.insert_new_line()
         self.insert_radiobutton(self.variable_state, 0, "Normal", command=self.check_state)
-        self.insert_new_line()
         self.insert_radiobutton(self.variable_state, 1, "Full Screen", command=self.check_state)
-        self.insert_new_line()
         self.insert_radiobutton(self.variable_state, 2, "Border-less", command=self.check_state)
-        self.insert_new_line()
         self.insert_checkbutton(self.variable_maximized, "Maximized", command=self.check_maximized)
-        self.insert_new_line()
         self.insert_new_line()
 
         self.insert_new_line()

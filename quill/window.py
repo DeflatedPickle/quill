@@ -248,6 +248,8 @@ class Window(tk.Tk):
 
         self.id_current_trigger += 1
 
+        return tag
+
     def toggle_trigger(self, tag: str, *args):
         """Toggles a trigger off."""
         self.text.tag_configure(tag, foreground=self.colour_trigger_off)

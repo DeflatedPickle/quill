@@ -4,7 +4,7 @@
 
 __title__ = "Merchant"
 __author__ = "DeflatedPickle"
-__version__ = "1.1.1"
+__version__ = "1.1.4"
 
 
 class Merchant(object):
@@ -18,17 +18,28 @@ class Merchant(object):
         self.inventory = inventory
         self.description = description
 
+        self.merchant_inventory = []
+        self.your_inventory = []
+
     def show_inventory(self, *args):
         self.window.enable()
         self.window.insert_new_line()
         self.window.insert_new_line()
 
-        self.window.insert_text("Inventory:\n", tag="Quote")
+        self.merchant_inventory.clear()
+        self.window.insert_text("-------------------", True)
+        self.window.insert_text("Merchant Inventory: {}".format(self.money), True)
         for item in self.inventory:
             self.window.insert_item(self.inventory[self.inventory.index(item)])
-            self.window.insert_command(" Buy", command=self.buy_item)
-            self.window.insert_command(" Sell", command=self.sell_item)
-            self.window.insert_text("\n", tag="Quote")
+            self.merchant_inventory.append(self.window.insert_trigger(" Buy", True, command=lambda *args: self.buy_item(item)))
+        self.window.insert_text("-------------------", True)
+
+        self.your_inventory.clear()
+        self.window.insert_text("Your Inventory: {}".format(self.window.player.money), True)
+        for item in self.window.player.inventory:
+            self.window.insert_item(self.inventory[self.window.player.inventory.index(item)])
+            self.your_inventory.append(self.window.insert_trigger(" Sell", True, command=lambda *args: self.sell_item(item)))
+        self.window.insert_text("-------------------", True)
 
         self.window.goto_end()
         self.window.disable()
@@ -40,12 +51,48 @@ class Merchant(object):
         self.inventory.append(item)
         self.money -= item.value
 
+        self.window.enable()
+        self.window.insert_new_line()
+
+        self.window.insert_text("Thank you for the ")
+        self.window.insert_item(item)
+        self.window.insert_text(". I'm sure it will be of great use to me.")
+
+        self.window.goto_end()
+        self.window.disable()
+
+        for item in self.merchant_inventory:
+            self.window.toggle_trigger(item)
+
+        for item in self.your_inventory:
+            self.window.toggle_trigger(item)
+
+        self.show_inventory()
+
     def buy_item(self, item, *args):
         """Buy an Item from the merchant."""
         self.window.player.inventory.append(item)
         self.window.player.money -= item.value
         self.inventory.remove(item)
         self.money += item.value
+
+        self.window.enable()
+        self.window.insert_new_line()
+
+        self.window.insert_text("Here you go. Enjoy the ")
+        self.window.insert_item(item)
+        self.window.insert_text(".")
+
+        self.window.goto_end()
+        self.window.disable()
+
+        for item in self.merchant_inventory:
+            self.window.toggle_trigger(item)
+
+        for item in self.your_inventory:
+            self.window.toggle_trigger(item)
+
+        self.show_inventory()
 
     def give(self, item):
         """Gives the merchant an item."""
