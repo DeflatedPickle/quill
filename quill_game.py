@@ -24,7 +24,8 @@ class Game(quill.Window):
 
         self.merchant_frank_lyatut = Merchant(self, name="Frank Lyatut", price_difference=0,
                                               inventory=[self.potion_small_health,
-                                                         self.potion_medium_health], money=200)
+                                                         self.potion_medium_health,
+                                                         self.sword_broken], money=200)
 
         self.simple_quest = Quest(self, "Simple Quest", [self.sword_of_doom], "Do something.",
                                   "You were told to do something.")
@@ -40,8 +41,7 @@ class Game(quill.Window):
         self.enable()
         self.clear()
 
-        self.insert_text("Maze Game", tag="Heading-4")
-        self.insert_new_line()
+        self.insert_text("Maze Game", True, tag="Heading-4")
 
         self.insert_command("> Start", command=self.start)
         self.insert_command("> Options", command=self.options)
@@ -75,10 +75,10 @@ class Game(quill.Window):
 
         self.insert_text("Window Options", tag="Heading-4")
         self.insert_new_line()
-        self.insert_radiobutton(self.variable_state, 0, "Normal", command=self.check_state)
-        self.insert_radiobutton(self.variable_state, 1, "Full Screen", command=self.check_state)
-        self.insert_radiobutton(self.variable_state, 2, "Border-less", command=self.check_state)
-        self.insert_checkbutton(self.variable_maximized, "Maximized", command=self.check_maximized)
+        self.insert_radiobutton("Normal", self.variable_state, 0, command=self.check_state)
+        self.insert_radiobutton("Full Screen", self.variable_state, 1, command=self.check_state)
+        self.insert_radiobutton("Border-less", self.variable_state, 2, command=self.check_state)
+        self.insert_checkbutton("Maximized", self.variable_maximized, command=self.check_maximized)
         self.insert_new_line()
 
         self.insert_new_line()

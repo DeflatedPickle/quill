@@ -17,6 +17,11 @@ class Quest(object):
         self.goal = goal
         self.description = description
 
+    def show(self, *args):
+        """Shows the quest."""
+        # TODO: Finish this function
+        pass
+
     def complete(self, *args):
         """Complete the quest."""
         # TODO: Finish this function

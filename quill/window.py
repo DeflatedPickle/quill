@@ -15,7 +15,7 @@ from .quest import Quest
 
 __title__ = "Window"
 __author__ = "DeflatedPickle"
-__version__ = "1.8.0"
+__version__ = "1.41.2"
 
 
 class Window(tk.Tk):
@@ -110,6 +110,8 @@ class Window(tk.Tk):
         """This function runs on startup."""
         pass
 
+    # Modifier Functions
+
     def enable(self, *args):
         """Must be used before inserting anything."""
         self.text.configure(state="normal")
@@ -117,6 +119,14 @@ class Window(tk.Tk):
     def disable(self, *args):
         """Used to disable the text."""
         self.text.configure(state="disable")
+
+    def clear(self, *args):
+        """Clears all text from the game."""
+        self.text.delete(1.0, "end")
+
+    def goto_end(self, *args):
+        """Scrolls the text widget to the bottom."""
+        self.text.see("end")
 
     # Insert Methods
 
@@ -169,7 +179,7 @@ class Window(tk.Tk):
 
         self.id_current_command += 1
 
-    def insert_checkbutton(self, variable: tk.BooleanVar, what: str="", fill_line: bool=True, index: int or str="end", command=None, *args):
+    def insert_checkbutton(self, what: str="", variable: tk.BooleanVar=None, fill_line: bool=True, index: int or str="end", command=None, *args):
         """Insert a checkbutton into the game."""
         tag = "Check-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", what), self.id_current_check)
         if variable.get():
@@ -196,7 +206,7 @@ class Window(tk.Tk):
         elif not variable.get():
             self.text.tag_configure(tag, foreground=self.colour_check_off)
 
-    def insert_radiobutton(self, variable: tk.IntVar, value: int, what: str="", fill_line: bool=True, index: int or str="end", command=None, *args):
+    def insert_radiobutton(self, what: str="", variable: tk.IntVar=None, value: int=0, fill_line: bool=True, index: int or str="end", command=None, *args):
         """Inserts a radiobutton into the game."""
         tag = "Radio-{}-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", str(variable)), str(value), self.id_current_radio)
         if variable.get() == value:
@@ -318,11 +328,11 @@ class Window(tk.Tk):
         item.show_stats()
         self.text.tag_configure(tag, foreground=self.colour_item_off)
 
-    def insert_merchant(self, merchant: Merchant, index: int or str="end", *args):
+    def insert_merchant(self, merchant: Merchant, fill_line: bool=False, index: int or str="end", *args):
         """Inserts an merchant into the game."""
         tag = "Merchant-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", merchant.name), self.id_current_merchant)
         self.text.tag_configure(tag, foreground=self.colour_merchant_on)
-        self.text.insert(index, merchant.name, tag)
+        self.text.insert(index, merchant.name + "\n" if fill_line else merchant.name, tag)
 
         self.unbind_tag(tag)
 
@@ -340,11 +350,259 @@ class Window(tk.Tk):
 
     def insert_quest(self, quest: Quest, fill_line: bool=False, index: int or str="end", *args):
         """Inserts a quest into the game."""
-        tag = "Quest-{}".format(re.sub("[^0-9a-zA-Z]+", "", quest.name))
+        tag = "Quest-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", quest.name), self.id_current_quest)
         self.text.tag_configure(tag, foreground=self.colour_merchant_on)
         self.text.insert(index, quest.name + "\n" if fill_line else quest.name, tag)
 
-    # Tag Methods
+        self.unbind_tag(tag)
+
+        self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_quest(quest, tag), "+")
+
+        self.bind_cursor(tag)
+        self.bind_background(tag)
+
+        self.id_current_quest += 1
+
+    def toggle_quest(self, quest: Quest, tag: str, *args):
+        """Toggles a quest."""
+        quest.show()
+        self.text.tag_configure(tag, foreground=self.colour_quest_off)
+
+    # Insert Widgets
+
+        # TK Versions
+
+    def insert_tk_button(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Button into the game."""
+        widget = tk.Button(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_checkbutton(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Checkbutton into the game."""
+        widget = tk.Checkbutton(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_entry(self, index: int or str="end", *args, **kwargs):
+        """Insert an tk.Entry into the game."""
+        widget = tk.Entry(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_frame(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Frame into the game."""
+        widget = tk.Frame(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_label(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Label into the game."""
+        widget = tk.Label(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_labelframe(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.LabelFrame into the game."""
+        widget = tk.LabelFrame(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_menubutton(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Menubutton into the game."""
+        widget = tk.Menubutton(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_panedwindow(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.PanedWindow into the game."""
+        widget = tk.PanedWindow(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_radiobutton(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Radiobutton into the game."""
+        widget = tk.Radiobutton(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_scale(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Scale into the game."""
+        widget = tk.Scale(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_scrollbar(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Scrollbar into the game."""
+        widget = tk.Scrollbar(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+        # TK Only
+
+    def insert_tk_canvas(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Canvas into the game."""
+        widget = tk.Canvas(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_listbox(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Listbox into the game."""
+        widget = tk.Listbox(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_message(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Listbox into the game."""
+        widget = tk.Message(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_text(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Listbox into the game."""
+        widget = tk.Text(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_tk_spinbox(self, index: int or str="end", *args, **kwargs):
+        """Insert a tk.Spinbox into the game."""
+        widget = tk.Spinbox(self.text, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+        # TTK Versions
+
+    def insert_ttk_button(self, command=None, width: int=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Button into the game."""
+        widget = ttk.Button(self.text, command=command, width=width, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_checkbutton(self, command=None, offvalue: int=0, onvalue: int=1, variable: tk.BooleanVar=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Checkbutton into the game."""
+        widget = ttk.Checkbutton(self.text, command=command, offvalue=offvalue, onvalue=onvalue, variable=variable, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_entry(self, exportselection: int=0, invalidcommand=None, justify: tk.LEFT or tk.CENTER or tk.RIGHT or str=None, show: str=None, state: str="normal", textvariable: tk.Variable=None, validate=None, validatecommand=None, width: int=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Entry into the game."""
+        widget = ttk.Entry(self.text, exportselection=exportselection, invalidcommand=invalidcommand, justify=justify, show=show, state=state, textvariable=textvariable, validate=validate, validatecommand=validatecommand, width=width, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_frame(self, borderwidth: int=0, relief: tk.FLAT or tk.RAISED or tk.SUNKEN or tk.GROOVE or tk.RIDGE or str="flat", padding: list=[], width: int=None, height: int=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Frame into the game."""
+        widget = ttk.Frame(self.text, borderwidth=borderwidth, relief=relief, padding=padding, width=width, height=height, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_label(self, anchor: tk.W or tk.CENTER or tk.E or str=None, background: str="", font: font.Font=None, foreground: str="", justify: tk.LEFT or tk.CENTER or tk.RIGHT or str=None, padding: list=[], relief: tk.FLAT or tk.RAISED or tk.SUNKEN or tk.GROOVE or tk.RIDGE or str="flat", text: str="", wraplength: int=0, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Label into the game."""
+        widget = ttk.Label(self.text, anchor=anchor, background=background, font=font, foreground=foreground, justify=justify, padding=padding, relief=relief, text=text, wraplength=wraplength, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_labelframe(self, labelanchor: str="nw", text: str="", underline: int=None, padding: list=[], labelwidget: tk.Widget=None, width: int=None, height: int=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.LabelFrame into the game."""
+        widget = ttk.LabelFrame(self.text, labelanchor=labelanchor, text=text, underline=underline, padding=padding, labelwidget=labelwidget, width=width, height=height, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_menubutton(self, direction: str="below", menu: tk.Menu=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Menubutton into the game."""
+        widget = ttk.Menubutton(self.text, direction=direction, menu=menu, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_panedwindow(self, orient: tk.HORIZONTAL or tk.VERTICAL or str=None, width: int=None, height: int=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.PanedWindow into the game."""
+        widget = ttk.PanedWindow(self.text, orient=orient, width=width, height=height, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_radiobutton(self, command=None, value: int=None, variable: tk.IntVar=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Radiobutton into the game."""
+        widget = ttk.Radiobutton(self.text, command=command, value=value, variable=variable, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_scale(self, command=None, from_: int=0, length: int=100, to: int=100, value: float=0.0, variable: tk.IntVar=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Scale into the game."""
+        widget = ttk.Scale(self.text, command=command, from_=from_, length=length, to=to, value=value, variable=variable, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_scrollbar(self, command=None, orient: tk.HORIZONTAL or tk.VERTICAL or str=None, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Scrollbar into the game."""
+        widget = ttk.Scrollbar(self.text, command=command, orient=orient, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+        # TTK Only
+
+    def insert_ttk_combobox(self, exportselection: bool=False, justify: str="left", height: int=None, postcommand=None, state: str="normal", textvariable: tk.Variable=None, values: list=[], width: int=10, index: int or str="end", *args, **kwargs):
+        """Insert a ttk.Combobox into the game."""
+        widget = ttk.Combobox(self.text, exportselection=exportselection, justify=justify, height=height, postcommand=postcommand, state=state, textvariable=textvariable, values=values, width=width, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_notebook(self, height: int=None, padding: list=[], width: int=None, index: int or str="end", **kwargs):
+        """Insert a ttk.Notebook into the game."""
+        widget = ttk.Notebook(self.text, height=height, padding=padding, width=width, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_progressbar(self, orient: str="horizontal", length: int=None, mode: str="determinate", maximum: int=100, value: int=0, variable: tk.IntVar=None, phase: int=0, index: int or str="end", **kwargs):
+        """Insert a ttk.Progressbar into the game."""
+        widget = ttk.Progressbar(self.text, orient=orient, length=length, mode=mode, maximum=maximum, value=value, variable=variable, phase=phase, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_separator(self, orient: str="horizontal", index: int or str="end", **kwargs):
+        """Insert a ttk.Separator into the game."""
+        widget = ttk.Separator(self.text, orient=orient, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    def insert_ttk_treeview(self, columns: list=[], displaycolumns: list or str="#all", height: int=None, padding: list=[], selectmode: str="extended", show: str="tree headings", index: int or str="end", **kwargs):
+        """Insert a ttk.Separator into the game."""
+        widget = ttk.Treeview(self.text, columns=columns, displaycolumns=displaycolumns, height=height, padding=padding, selectmode=selectmode, show=show, **kwargs)
+        self.text.window_create(index, window=widget)
+
+        return widget
+
+    # Bind Functions
 
     def unbind_tag(self, tag, release=False, both=False):
         """Unbinds a tag."""
@@ -379,7 +637,7 @@ class Window(tk.Tk):
         """Adds a tab to the game."""
         self.text.insert("end", "\t")
 
-    # Tag Methods
+    # Tag Functions
 
     def new_tag(self, tag: str, **options):
         """Creates a new tag."""
@@ -408,15 +666,7 @@ class Window(tk.Tk):
                 list_.append(i)
         return list_
 
-    def clear(self, *args):
-        """Clears all text from the game."""
-        self.text.delete(1.0, "end")
-
-    def goto_end(self, *args):
-        """Scrolls the text widget to the bottom."""
-        self.text.see("end")
-
-    # Window Methods
+    # Window Functions
 
     def normal(self, *args):
         """Un-maximizes the window."""
@@ -441,6 +691,8 @@ class Window(tk.Tk):
     def remove_borders(self, *args):
         """Removes the borders and title bar from the window."""
         self.overrideredirect(True)
+
+    # Other Functions
 
     def exit(self, *args):
         """Exits the game."""

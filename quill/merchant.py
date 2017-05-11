@@ -8,7 +8,7 @@ __version__ = "1.1.4"
 
 
 class Merchant(object):
-    """Creates an merchant."""
+    """Creates a merchant."""
     # TODO: Finish this class
     def __init__(self, window, name: str, money: int, price_difference: int, inventory: list, description=""):
         self.window = window
@@ -27,25 +27,29 @@ class Merchant(object):
         self.window.insert_new_line()
 
         self.merchant_inventory.clear()
-        self.window.insert_text("-------------------", True)
-        self.window.insert_text("Merchant Inventory: {}".format(self.money), True)
+        self.window.insert_text("-----Merchant-----", True)
+        self.window.insert_text("Money: {}".format(self.money), True)
+        self.window.insert_text("Inventory:", True)
         for item in self.inventory:
             self.window.insert_item(self.inventory[self.inventory.index(item)])
-            self.merchant_inventory.append(self.window.insert_trigger(" Buy", True, command=lambda *args: self.buy_item(item)))
-        self.window.insert_text("-------------------", True)
+            trigger = self.window.insert_trigger(" Buy", True, command=lambda *args: self.buy_item(item))
+            self.merchant_inventory.append(trigger)
 
+        self.window.insert_text("-----Player-----", True)
         self.your_inventory.clear()
-        self.window.insert_text("Your Inventory: {}".format(self.window.player.money), True)
+        self.window.insert_text("Money: {}".format(self.window.player.money), True)
+        self.window.insert_text("Inventory:", True)
         for item in self.window.player.inventory:
             self.window.insert_item(self.inventory[self.window.player.inventory.index(item)])
-            self.your_inventory.append(self.window.insert_trigger(" Sell", True, command=lambda *args: self.sell_item(item)))
+            trigger = self.window.insert_trigger(" Sell", True, command=lambda *args: self.sell_item(item))
+            self.your_inventory.append(trigger)
         self.window.insert_text("-------------------", True)
 
         self.window.goto_end()
         self.window.disable()
 
     def sell_item(self, item, *args):
-        """Sell an Item to the merchant."""
+        """Sell an item to the merchant."""
         self.window.player.inventory.remove(item)
         self.window.player.money += item.value
         self.inventory.append(item)
@@ -70,7 +74,7 @@ class Merchant(object):
         self.show_inventory()
 
     def buy_item(self, item, *args):
-        """Buy an Item from the merchant."""
+        """Buy an item from the merchant."""
         self.window.player.inventory.append(item)
         self.window.player.money -= item.value
         self.inventory.remove(item)
