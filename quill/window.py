@@ -20,6 +20,7 @@ __version__ = "1.41.2"
 
 class Window(tk.Tk):
     """Creates the Window used for the game."""
+
     def __init__(self, title="Quill", icon=None, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title(title)
@@ -691,6 +692,23 @@ class Window(tk.Tk):
     def remove_borders(self, *args):
         """Removes the borders and title bar from the window."""
         self.overrideredirect(True)
+
+    # Text Functions
+
+    def change_background(self, colour: str):
+        self.text.configure(background=colour)
+
+    def change_borderwidth(self, distance: int):
+        self.text.configure(borderwidth=distance)
+
+    def change_font(self, font: font.Font):
+        self.text.configure(font=font)
+
+    def change_foreground(self, colour: str):
+        self.text.configure(foreground=colour)
+
+    def change_relief(self, constant: str or tk.RAISED or tk.SUNKEN or tk.FLAT or tk.RIDGE or tk.GROOVE or tk.SOLID):
+        self.text.configure(relief=constant)
 
     # Other Functions
 
