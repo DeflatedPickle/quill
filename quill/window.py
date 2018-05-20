@@ -7,11 +7,11 @@ from tkinter import ttk
 from tkinter import font
 import re
 
-from .player import Player
-from .loottable import LootTable
-from .item import Item
-from .merchant import Merchant
-from .quest import Quest
+from quill.rpg.player import Player
+from quill.rpg.loottable import LootTable
+from quill.rpg.item import Item
+from quill.rpg.merchant import Merchant
+from quill.rpg.quest import Quest
 
 __title__ = "Window"
 __author__ = "DeflatedPickle"
@@ -276,7 +276,7 @@ class Window(tk.Tk):
     # Insert Classes
 
     def insert_container(self, loot_table: LootTable, fill_line: bool=False, index: int or str="end", command=None, *args):
-        """Insert a checkbutton into the game."""
+        """Insert a container into the game."""
         tag = "Container-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", loot_table.name), self.id_current_container)
         self.text.tag_configure(tag, foreground=self.colour_container_on)
         self.text.insert(index, loot_table.name + "\n" if fill_line else loot_table.name, tag)

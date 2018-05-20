@@ -26,7 +26,7 @@ class Calculator(Window):
 
         method = "+" if calculation == "add" else "-" if calculation == "subtract" else "*" if calculation == "multiply" else "/" if calculation == "divide" else ""
 
-        self.insert_text("What numbers would you like to {}?".format("add" if calculation == "add" else "subtract" if calculation == "subtract" else "multiply" if calculation == "multiply" else "divide" if calculation == "divide" else ""), True)
+        self.insert_text("What numbers would you like to {}?".format(calculation), True)
         first_number = self.insert_ttk_entry()
         self.insert_text(" {} ".format(method))
         second_number = self.insert_ttk_entry()

@@ -4,9 +4,7 @@
 """
 
 from .window import Window
-from .item import Item
-from .loottable import LootTable
-from .player import Player
+
 # from .merchant import *
 # from .quest import *
 

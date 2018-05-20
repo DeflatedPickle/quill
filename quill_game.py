@@ -1,23 +1,23 @@
 import quill
-from quill.merchant import Merchant
-from quill.quest import Quest
+from quill.rpg.merchant import Merchant
+from quill.rpg.quest import Quest
 import tkinter as tk
 
 
 class Game(quill.Window):
     def startup(self):
-        self.sword_broken = quill.Item(self, "Broken Sword", {"weapon": {"type": "sword", "damage": 5}},
+        self.sword_broken = quill.rpg.Item(self, "Broken Sword", {"weapon": {"type": "sword", "damage": 5}},
                                        rarity="Common")
-        self.sword_of_doom = quill.Item(self, "Sword of Doom", {"weapon": {"type": "sword", "damage": 150}},
+        self.sword_of_doom = quill.rpg.Item(self, "Sword of Doom", {"weapon": {"type": "sword", "damage": 150}},
                                         rarity="Legendary")
-        self.potion_small_health = quill.Item(self, "Small Potion of Health",
+        self.potion_small_health = quill.rpg.Item(self, "Small Potion of Health",
                                               {"potion": {"type": "health", "amount": 15}}, value=15, rarity="Common")
-        self.potion_medium_health = quill.Item(self, "Medium Potion of Health",
+        self.potion_medium_health = quill.rpg.Item(self, "Medium Potion of Health",
                                                {"potion": {"type": "health", "amount": 30}}, value=30, rarity="Uncommon")
-        self.potion_large_health = quill.Item(self, "Large Potion of Health",
+        self.potion_large_health = quill.rpg.Item(self, "Large Potion of Health",
                                               {"potion": {"type": "health", "amount": 50}}, value=45, rarity="Rare")
 
-        self.loot_small_chest = quill.LootTable(self, "Small Chest", [self.sword_broken,
+        self.loot_small_chest = quill.rpg.LootTable(self, "Small Chest", [self.sword_broken,
                                                                       self.potion_small_health,
                                                                       self.potion_medium_health,
                                                                       self.potion_large_health])

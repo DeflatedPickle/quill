@@ -5,11 +5,11 @@ game = quill.Window()
 
 
 def startup():
-    game.sword_broken = quill.Item(game, "Broken Sword", {"weapon": {"type": "sword", "damage": 5}}, rarity="Common")
-    game.potion_health_small = quill.Item(game, "Small Potion of Health", {"potion": {"type": "health", "amount": 15}},
+    game.sword_broken = quill.rpg.Item(game, "Broken Sword", {"weapon": {"type": "sword", "damage": 5}}, rarity="Common")
+    game.potion_health_small = quill.rpg.Item(game, "Small Potion of Health", {"potion": {"type": "health", "amount": 15}},
                                           value=15, rarity="Common")
 
-    game.loot_small_chest = quill.LootTable(game, "Small Chest", [game.sword_broken, game.potion_health_small])
+    game.loot_small_chest = quill.rpg.LootTable(game, "Small Chest", [game.sword_broken, game.potion_health_small])
 
     game.variable_state = tk.IntVar()
     game.variable_maximized = tk.BooleanVar()
