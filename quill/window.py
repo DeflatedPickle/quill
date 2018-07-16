@@ -7,6 +7,9 @@ from tkinter import ttk
 from tkinter import font
 import re
 
+from quill.widget.text import Text
+from quill.widget.extendingtext import ExtendingText
+
 from quill.rpg.player import Player
 from quill.rpg.loottable import LootTable
 from quill.rpg.item import Item
@@ -131,28 +134,17 @@ class Window(tk.Tk):
 
     # Insert Methods
 
-    def insert_text(self, what: str="", fill_line: bool=False, index: int or str="end", tag: str="Paragraph", *args):
+    def insert_text(self, text: str="", fill_line: bool=False, index: int or str="end", tag: str="Paragraph") -> Text:
         """Inserts a string of text into the game."""
-        self.text.insert(index, what + "\n" if fill_line else what, tag)
+        widget = Text(self.text, text, fill_line, index, tag)
 
-    def insert_extending_text(self, what: str="", extend: str="", fill_line: bool=False, index: int or str="end", command=None, *args):
+        return widget
+
+    def insert_extending_text(self, text: str="", extend: str="", fill_line: bool=False, index: int or str="end", command=None, *args) -> ExtendingText:
         """Inserts a string of text that can be extended."""
-        tag = "Extend-{}-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "normal", self.id_current_extend)
-        tag2 = "Extend-{}-{}:{}".format(re.sub("[^0-9a-zA-Z]+", "", extend), "extend", self.id_current_extend)
-        self.text.tag_configure(tag, foreground=self.colour_extend_on, elide=False)
-        self.text.tag_configure(tag2, foreground=self.colour_extend_off, elide=True)
-        self.text.insert(index, what + "\n" if fill_line else what, tag)
-        self.text.insert(index, extend + "\n" if fill_line else extend, tag2)
+        widget = ExtendingText(self, self.text, text, fill_line, index, command)
 
-        self.unbind_tag(tag, release=True, both=True)
-
-        self.text.tag_bind(tag, "<ButtonRelease-1>", command, "+")
-        self.text.tag_bind(tag, "<Button-1>", lambda *args: self.toggle_extend(tag, tag2), "+")
-
-        self.bind_cursor(tag)
-        self.bind_background(tag)
-
-        self.id_current_extend += 1
+        return widget
 
     def toggle_extend(self, tag: str, tag2: str, *args):
         """Toggles an extending text off."""
@@ -707,8 +699,8 @@ class Window(tk.Tk):
     def change_foreground(self, colour: str):
         self.text.configure(foreground=colour)
 
-    def change_relief(self, constant: str or tk.RAISED or tk.SUNKEN or tk.FLAT or tk.RIDGE or tk.GROOVE or tk.SOLID):
-        self.text.configure(relief=constant)
+    def change_relief(self, type: str or tk.RAISED or tk.SUNKEN or tk.FLAT or tk.RIDGE or tk.GROOVE or tk.SOLID):
+        self.text.configure(relief=type)
 
     # Other Functions
 
